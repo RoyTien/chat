@@ -231,6 +231,18 @@ func (s *Session) unsubAll() {
 	}
 }
 
+func (s *Session) unsubAllChannel() {
+	s.subsLock.RLock()
+	defer s.subsLock.RUnlock()
+
+	for topicName, sub := range s.subs {
+		if isChannel(topicName) {
+			log.Println(topicName)
+			sub.done <- &sessionLeave{sess: s}
+		}
+	}
+}
+
 // Represents a proxied (remote) session.
 type remoteSession struct {
 	// User id of the proxied session.
