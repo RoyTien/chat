@@ -237,11 +237,27 @@ func (s *Session) unsubAllChannel() {
 
 	for topicName, sub := range s.subs {
 		log.Println(topicName)
-		if isChannel(topicName) {
+		if isGroup(topicName) {
 			log.Println(topicName)
 			sub.done <- &sessionLeave{sess: s}
 		}
 	}
+}
+
+func (s *Session) delSubChannel() {
+	if s.multi != nil {
+		s.multi.delSubChannel()
+		return
+	}
+	s.subsLock.Lock()
+	for topicName, _ := range s.subs {
+		log.Println(topicName)
+		if isGroup(topicName) {
+			log.Println(topicName)
+			delete(s.subs, topicName)
+		}
+	}
+	s.subsLock.Unlock()
 }
 
 // Represents a proxied (remote) session.

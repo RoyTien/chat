@@ -3507,6 +3507,10 @@ func isChannel(name string) bool {
 	return strings.HasPrefix(name, "chn")
 }
 
+func isGroup(name string) bool {
+	return strings.HasPrefix(name, "grp")
+}
+
 // Convert expanded (routable) topic name into name suitable for sending to the user.
 // For example p2pAbCDef123 -> usrAbCDef
 func topicNameForUser(name string, uid types.Uid, isChan bool) string {
