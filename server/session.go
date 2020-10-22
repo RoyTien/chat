@@ -236,6 +236,7 @@ func (s *Session) unsubAllChannel() {
 	defer s.subsLock.RUnlock()
 
 	for topicName, sub := range s.subs {
+		log.Println(topicName)
 		if isChannel(topicName) {
 			log.Println(topicName)
 			sub.done <- &sessionLeave{sess: s}
