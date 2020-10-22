@@ -236,9 +236,11 @@ func (s *Session) unsubAllChannel() {
 	defer s.subsLock.RUnlock()
 
 	for topicName, sub := range s.subs {
-		log.Println(topicName)
+		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
-			log.Println(topicName)
+			log.Printf("Group topic | %s\n",topicName)
+			s.delSub(topicName)
+			s.inflightReqs.Add(1)
 			sub.done <- &sessionLeave{sess: s}
 		}
 	}

@@ -31,7 +31,7 @@ const (
 
 func (sess *Session) closeWS() {
 	if sess.proto == WEBSOCK {
-		sess.unsubAll()
+		sess.unsubAllChannel()
 		sess.ws.Close()
 	}
 }
