@@ -206,7 +206,9 @@ func (s *Session) delSub(topic string) {
 		s.multi.delSub(topic)
 		return
 	}
+	log.Println("|||1")
 	s.subsLock.Lock()
+	log.Println("|||2")
 	delete(s.subs, topic)
 	s.subsLock.Unlock()
 }
@@ -417,11 +419,9 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 	s.lastAction = types.TimeNow()
 	msg.Timestamp = s.lastAction
 
-	log.Println("|||1")
 	if msg.AsUser == "" {
 		msg.AsUser = s.uid.UserId()
 		msg.AuthLvl = int(s.authLvl)
-		log.Println("|||2")
 	} else if s.authLvl != auth.LevelRoot {
 		// Only root user can set non-default msg.from && msg.authLvl values.
 		s.queueOut(ErrPermissionDenied("", "", msg.Timestamp))
@@ -587,7 +587,6 @@ func (s *Session) leave(msg *ClientComMessage) {
 	// Expand topic name
 	var resp *ServerComMessage
 	msg.RcptTo, resp = s.expandTopicName(msg)
-	log.Printf("Session Leave | %s | %d\n", msg.Original, msg.MetaWhat)
 	if resp != nil {
 		s.queueOut(resp)
 		return
@@ -603,10 +602,13 @@ func (s *Session) leave(msg *ClientComMessage) {
 			log.Printf("LEAVE | %s | %s | %d \n", msg.Leave.Id, msg.AsUser, msg.AuthLvl)
 			// Unlink from topic, topic will send a reply.
 			s.delSub(msg.RcptTo)
+			log.Println("|||3")
 			s.inflightReqs.Add(1)
+			log.Println("|||4")
 			sub.done <- &sessionLeave{
 				pkt:  msg,
 				sess: s}
+			log.Println("|||5")
 		}
 	} else if !msg.Leave.Unsub {
 		// Session is not attached to the topic, wants to leave - fine, no change
