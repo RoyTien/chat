@@ -3507,7 +3507,7 @@ func isChannel(name string) bool {
 	return strings.HasPrefix(name, "chn")
 }
 
-func isGroup(name string) bool {
+func isChatroom(name string) bool {
 	return strings.HasPrefix(name, "grp")
 }
 

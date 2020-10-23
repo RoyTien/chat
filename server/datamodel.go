@@ -1320,6 +1320,21 @@ func ErrPolicyExplicitTs(id, topic string, serverTs, incomingReqTs time.Time) *S
 		Timestamp: serverTs}, Id: id, Timestamp: incomingReqTs}
 }
 
+// ErrSubChatroom request violates one chatroom policy (409).
+func ErrSubChatroom(id, topic string, ts time.Time) *ServerComMessage {
+	return ErrSubChatroomTs(id, topic, ts, ts)
+}
+
+// ErrPolicy request violates one chatroom policy (409).
+func ErrSubChatroomTs(id, topic string, serverTs, incomingReqTs time.Time) *ServerComMessage {
+	return &ServerComMessage{Ctrl: &MsgServerCtrl{
+		Id:        id,
+		Code:      http.StatusConflict, // 409
+		Text:      "already sub chatroom before",
+		Topic:     topic,
+		Timestamp: serverTs}, Id: id, Timestamp: incomingReqTs}
+}
+
 // ErrPolicyReply request violates a policy (e.g. password is too weak or too many subscribers)
 // with explicit server and incoming request timestamps in response to a client request (422).
 func ErrPolicyReply(msg *ClientComMessage, ts time.Time) *ServerComMessage {

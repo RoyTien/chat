@@ -233,23 +233,17 @@ func (s *Session) unsubAll() {
 
 func (s *Session) unsubAllChannel() {
 	for topicName, _ := range s.subs {
-		if isGroup(topicName) {
-			log.Printf("Group topic | %s\n",topicName)
+		if isChatroom(topicName) {
+			log.Printf("Leaving chatroom topic | %s\n",topicName)
 			msg := &ClientComMessage{
 				Leave: &MsgClientLeave{
 					Topic: topicName,
 					Unsub: true,
 				},
-				//AsUser: asUser,
-				//AuthLvl: int(s.authLvl),
 				RcptTo: topicName,
 				Original: topicName,
 			}
 			s.dispatch(msg)
-			//s.leave(msg)
-			//s.delSub(topicName)
-			//s.inflightReqs.Add(1)
-			//sub.done <- &sessionLeave{sess: s}
 		}
 	}
 }
@@ -556,6 +550,15 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 		}
 	}
 
+	// violates one chatroom policy
+	for topicName, _ := range s.subs {
+		if isChatroom(topicName) {
+			resp := ErrSubChatroom(msg.Id, msg.RcptTo, msg.Timestamp)
+			s.queueOut(resp)
+			return
+		}
+	}
+
 	// Session can subscribe to topic on behalf of a single user at a time.
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		s.queueOut(InfoAlreadySubscribed(msg.Id, msg.Original, msg.Timestamp))
@@ -591,8 +594,6 @@ func (s *Session) leave(msg *ClientComMessage) {
 			// User should not unsubscribe from 'me' or 'find'. Just leaving is fine.
 			s.queueOut(ErrPermissionDeniedReply(msg, msg.Timestamp))
 		} else {
-			// TEST
-			log.Printf("LEAVE | %s | %s | %d \n", msg.Leave.Id, msg.AsUser, msg.AuthLvl)
 			// Unlink from topic, topic will send a reply.
 			s.delSub(msg.RcptTo)
 			s.inflightReqs.Add(1)
