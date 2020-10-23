@@ -245,13 +245,13 @@ func (s *Session) unsubAllChannel() {
 				Topic: topicName,
 				Unsub: true,
 			}
-			log.Printf("unsubAllChannel | uid | %s\n", strconv.FormatUint(uint64(s.uid), 10))
-			log.Printf("unsubAllChannel | authLvl | %d\n", int(s.authLvl))
-			msg.AsUser = strconv.FormatUint(uint64(s.uid), 10)
-			msg.AuthLvl = int(s.authLvl)
-
-
-
+			log.Printf("unsubAllChannel | uid: %s | authLvl: %d | sid: %s\n",
+				strconv.FormatUint(uint64(s.uid), 10),
+				int(s.authLvl),
+				s.sid,
+			)
+			//msg.AsUser = strconv.FormatUint(uint64(s.uid), 10)
+			//msg.AuthLvl = int(s.authLvl)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
 			//sub.done <- &sessionLeave{sess: s}
