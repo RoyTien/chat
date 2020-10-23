@@ -253,6 +253,7 @@ func (s *Session) unsubAllChannel() {
 				AsUser: asUser,
 				AuthLvl: int(s.authLvl),
 				RcptTo: topicName,
+				Original: "%!s(int=0)",
 			}
 			//var msg ClientComMessage
 			//msg.Leave = &MsgClientLeave{
