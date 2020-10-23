@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -246,20 +245,28 @@ func (s *Session) unsubAllChannel() {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
 			log.Printf("Group topic | %s\n",topicName)
-			var msg ClientComMessage
-			msg.Leave = &MsgClientLeave{
-				Topic: topicName,
-				Unsub: true,
+			msg := &ClientComMessage{
+				Leave: &MsgClientLeave{
+					Topic: topicName,
+					Unsub: true,
+				},
+				AsUser: asUser,
+				AuthLvl: int(s.authLvl),
+				RcptTo: topicName,
 			}
-			log.Printf("unsubAllChannel | uid: %s | authLvl: %d | AsUser: %s\n",
-				strconv.FormatUint(uint64(s.uid), 10),
-				int(s.authLvl),
+			//var msg ClientComMessage
+			//msg.Leave = &MsgClientLeave{
+			//	Topic: topicName,
+			//	Unsub: true,
+			//}
+			log.Printf("unsubAllChannel | topicName: %s | AsUser: %s\n",
+				topicName,
 				asUser,
 			)
-			msg.AsUser = asUser
-			msg.AuthLvl = int(s.authLvl)
-			msg.RcptTo = topicName
-			s.leave(&msg)
+			//msg.AsUser = asUser
+			//msg.AuthLvl = int(s.authLvl)
+			//msg.RcptTo = topicName
+			s.leave(msg)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
 			//sub.done <- &sessionLeave{sess: s}
