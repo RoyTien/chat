@@ -234,9 +234,6 @@ func (s *Session) unsubAll() {
 }
 
 func (s *Session) unsubAllChannel() {
-	s.subsLock.RLock()
-	defer s.subsLock.RUnlock()
-
 	for topicName, _ := range s.subs {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
