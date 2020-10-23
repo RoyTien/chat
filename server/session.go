@@ -250,6 +250,7 @@ func (s *Session) unsubAllChannel() {
 				Original: topicName,
 			}
 			s.dispatch(msg)
+			log.Println("success|||")
 			//s.leave(msg)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
