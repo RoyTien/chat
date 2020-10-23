@@ -417,9 +417,11 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 	s.lastAction = types.TimeNow()
 	msg.Timestamp = s.lastAction
 
+	log.Println("|||1")
 	if msg.AsUser == "" {
 		msg.AsUser = s.uid.UserId()
 		msg.AuthLvl = int(s.authLvl)
+		log.Println("|||2")
 	} else if s.authLvl != auth.LevelRoot {
 		// Only root user can set non-default msg.from && msg.authLvl values.
 		s.queueOut(ErrPermissionDenied("", "", msg.Timestamp))

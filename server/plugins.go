@@ -346,9 +346,10 @@ func pluginFireHose(sess *Session, msg *ClientComMessage) (*ClientComMessage, *S
 	}
 
 	var req *pbx.ClientReq
-
+	log.Println("|||3")
 	id, topic := pluginIDAndTopic(msg)
 	ts := time.Now().UTC().Round(time.Millisecond)
+	log.Println("|||5")
 	for i := range globals.plugins {
 		p := &globals.plugins[i]
 		if !pluginDoFiltering(p.filterFireHose, msg) {
@@ -709,6 +710,7 @@ func pluginIDAndTopic(msg *ClientComMessage) (string, string) {
 		return msg.Sub.Id, msg.Sub.Topic
 	}
 	if msg.Leave != nil {
+		log.Println("|||4")
 		return msg.Leave.Id, msg.Leave.Topic
 	}
 	if msg.Pub != nil {
