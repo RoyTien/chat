@@ -235,12 +235,12 @@ func (s *Session) unsubAllChannel() {
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
 
-	var asUser string
-	for topicName, _ := range s.subs {
-		if strings.HasPrefix(topicName, "usr") {
-			asUser = topicName
-		}
-	}
+	//var asUser string
+	//for topicName, _ := range s.subs {
+	//	if strings.HasPrefix(topicName, "usr") {
+	//		asUser = topicName
+	//	}
+	//}
 	for topicName, _ := range s.subs {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
@@ -250,24 +250,13 @@ func (s *Session) unsubAllChannel() {
 					Topic: topicName,
 					Unsub: true,
 				},
-				AsUser: asUser,
-				AuthLvl: int(s.authLvl),
+				//AsUser: asUser,
+				//AuthLvl: int(s.authLvl),
 				RcptTo: topicName,
 				Original: topicName,
 			}
-			//var msg ClientComMessage
-			//msg.Leave = &MsgClientLeave{
-			//	Topic: topicName,
-			//	Unsub: true,
-			//}
-			log.Printf("unsubAllChannel | topicName: %s | AsUser: %s\n",
-				topicName,
-				asUser,
-			)
-			//msg.AsUser = asUser
-			//msg.AuthLvl = int(s.authLvl)
-			//msg.RcptTo = topicName
-			s.leave(msg)
+			s.dispatch(msg)
+			//s.leave(msg)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
 			//sub.done <- &sessionLeave{sess: s}
