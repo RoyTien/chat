@@ -236,6 +236,12 @@ func (s *Session) unsubAllChannel() {
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
 
+	var asUser string
+	for topicName, _ := range s.subs {
+		if strings.HasPrefix(topicName, "usr") {
+			asUser = topicName
+		}
+	}
 	for topicName, _ := range s.subs {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
@@ -245,13 +251,14 @@ func (s *Session) unsubAllChannel() {
 				Topic: topicName,
 				Unsub: true,
 			}
-			log.Printf("unsubAllChannel | uid: %s | authLvl: %d | sid: %s\n",
+			log.Printf("unsubAllChannel | uid: %s | authLvl: %d | AsUser: %s\n",
 				strconv.FormatUint(uint64(s.uid), 10),
 				int(s.authLvl),
-				s.sid,
+				asUser,
 			)
 			//msg.AsUser = strconv.FormatUint(uint64(s.uid), 10)
 			//msg.AuthLvl = int(s.authLvl)
+			//msg.RcptTo = topicName
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
 			//sub.done <- &sessionLeave{sess: s}
