@@ -256,9 +256,10 @@ func (s *Session) unsubAllChannel() {
 				int(s.authLvl),
 				asUser,
 			)
-			//msg.AsUser = strconv.FormatUint(uint64(s.uid), 10)
-			//msg.AuthLvl = int(s.authLvl)
-			//msg.RcptTo = topicName
+			msg.AsUser = asUser
+			msg.AuthLvl = int(s.authLvl)
+			msg.RcptTo = topicName
+			s.leave(&msg)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)
 			//sub.done <- &sessionLeave{sess: s}
