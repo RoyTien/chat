@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -236,13 +236,25 @@ func (s *Session) unsubAllChannel() {
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
 
-	for topicName, sub := range s.subs {
+	for topicName, _ := range s.subs {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
 			log.Printf("Group topic | %s\n",topicName)
-			s.delSub(topicName)
-			s.inflightReqs.Add(1)
-			sub.done <- &sessionLeave{sess: s}
+			var msg ClientComMessage
+			msg.Leave = &MsgClientLeave{
+				Topic: topicName,
+				Unsub: true,
+			}
+			log.Printf("unsubAllChannel | uid | %s\n", strconv.FormatUint(uint64(s.uid), 10))
+			log.Printf("unsubAllChannel | authLvl | %d\n", int(s.authLvl))
+			msg.AsUser = strconv.FormatUint(uint64(s.uid), 10)
+			msg.AuthLvl = int(s.authLvl)
+
+
+
+			//s.delSub(topicName)
+			//s.inflightReqs.Add(1)
+			//sub.done <- &sessionLeave{sess: s}
 		}
 	}
 }
@@ -567,28 +579,10 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 	}
 }
 
-func SmartPrint(i interface{}){
-	var kv = make(map[string]interface{})
-	vValue := reflect.ValueOf(i)
-	vType :=reflect.TypeOf(i)
-	for i:=0;i<vValue.NumField();i++{
-		kv[vType.Field(i).Name] = vValue.Field(i)
-	}
-	log.Println("获取到数据:")
-	for k,v :=range kv{
-		log.Print(k)
-		log.Print(":")
-		log.Print(v)
-		log.Println()
-	}
-}
-
 // Leave/Unsubscribe a topic
 func (s *Session) leave(msg *ClientComMessage) {
 	// Expand topic name
 	var resp *ServerComMessage
-	log.Println(msg)
-	SmartPrint(msg)
 	msg.RcptTo, resp = s.expandTopicName(msg)
 	log.Printf("Session Leave | %s\n", msg.RcptTo)
 	if resp != nil {
@@ -602,6 +596,8 @@ func (s *Session) leave(msg *ClientComMessage) {
 			// User should not unsubscribe from 'me' or 'find'. Just leaving is fine.
 			s.queueOut(ErrPermissionDeniedReply(msg, msg.Timestamp))
 		} else {
+			// TEST
+			log.Printf("LEAVE | %s | %s | %d \n", msg.Leave.Id, msg.AsUser, msg.AuthLvl)
 			// Unlink from topic, topic will send a reply.
 			s.delSub(msg.RcptTo)
 			s.inflightReqs.Add(1)
