@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -240,7 +241,7 @@ func (s *Session) unsubAllChannel() {
 		if isGroup(topicName) {
 			log.Printf("Group topic | %s\n",topicName)
 			s.delSub(topicName)
-			//s.inflightReqs.Add(1)
+			s.inflightReqs.Add(1)
 			sub.done <- &sessionLeave{sess: s}
 		}
 	}
@@ -566,10 +567,28 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 	}
 }
 
+func SmartPrint(i interface{}){
+	var kv = make(map[string]interface{})
+	vValue := reflect.ValueOf(i)
+	vType :=reflect.TypeOf(i)
+	for i:=0;i<vValue.NumField();i++{
+		kv[vType.Field(i).Name] = vValue.Field(i)
+	}
+	log.Println("获取到数据:")
+	for k,v :=range kv{
+		log.Print(k)
+		log.Print(":")
+		log.Print(v)
+		log.Println()
+	}
+}
+
 // Leave/Unsubscribe a topic
 func (s *Session) leave(msg *ClientComMessage) {
 	// Expand topic name
 	var resp *ServerComMessage
+	log.Println(resp)
+	SmartPrint(resp)
 	msg.RcptTo, resp = s.expandTopicName(msg)
 	log.Printf("Session Leave | %s\n", msg.RcptTo)
 	if resp != nil {
