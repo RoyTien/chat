@@ -32,6 +32,10 @@ const (
 func (sess *Session) closeWS() {
 	if sess.proto == WEBSOCK {
 		sess.unsubAllChannel()
+
+		for topicName, _ := range sess.subs {
+			log.Printf("Still sub topic: %s\n", topicName)
+		}
 		sess.ws.Close()
 	}
 }

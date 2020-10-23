@@ -235,25 +235,25 @@ func (s *Session) unsubAllChannel() {
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
 
-	for topicName, sub := range s.subs {
+	for topicName, _ := range s.subs {
 		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
 			log.Printf("Group topic | %s\n",topicName)
-			//msg := &ClientComMessage{
-			//	Leave: &MsgClientLeave{
-			//		Topic: topicName,
-			//		Unsub: true,
-			//	},
-			//	//AsUser: asUser,
-			//	//AuthLvl: int(s.authLvl),
-			//	RcptTo: topicName,
-			//	Original: topicName,
-			//}
-			//s.dispatch(msg)
+			msg := &ClientComMessage{
+				Leave: &MsgClientLeave{
+					Topic: topicName,
+					Unsub: true,
+				},
+				//AsUser: asUser,
+				//AuthLvl: int(s.authLvl),
+				RcptTo: topicName,
+				Original: topicName,
+			}
+			s.dispatch(msg)
 			//s.leave(msg)
-			s.delSub(topicName)
-			s.inflightReqs.Add(1)
-			sub.done <- &sessionLeave{sess: s}
+			//s.delSub(topicName)
+			//s.inflightReqs.Add(1)
+			//sub.done <- &sessionLeave{sess: s}
 		}
 	}
 }
@@ -433,6 +433,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 	var resp *ServerComMessage
 	if msg, resp = pluginFireHose(s, msg); resp != nil {
 		// Plugin provided a response. No further processing is needed.
+		log.Println("Something is wrong |||")
 		s.queueOut(resp)
 		return
 	} else if msg == nil {
