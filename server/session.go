@@ -587,7 +587,8 @@ func SmartPrint(i interface{}){
 func (s *Session) leave(msg *ClientComMessage) {
 	// Expand topic name
 	var resp *ServerComMessage
-	SmartPrint(resp)
+	log.Println(msg)
+	SmartPrint(msg)
 	msg.RcptTo, resp = s.expandTopicName(msg)
 	log.Printf("Session Leave | %s\n", msg.RcptTo)
 	if resp != nil {
