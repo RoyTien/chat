@@ -235,7 +235,6 @@ func (s *Session) unsubAll() {
 
 func (s *Session) unsubAllChannel() {
 	for topicName, _ := range s.subs {
-		log.Printf("Loop all subs | %s\n",topicName)
 		if isGroup(topicName) {
 			log.Printf("Group topic | %s\n",topicName)
 			msg := &ClientComMessage{
@@ -249,7 +248,6 @@ func (s *Session) unsubAllChannel() {
 				Original: topicName,
 			}
 			s.dispatch(msg)
-			log.Println("success|||")
 			//s.leave(msg)
 			//s.delSub(topicName)
 			//s.inflightReqs.Add(1)

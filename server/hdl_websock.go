@@ -32,10 +32,6 @@ const (
 func (sess *Session) closeWS() {
 	if sess.proto == WEBSOCK {
 		sess.unsubAllChannel()
-
-		for topicName, _ := range sess.subs {
-			log.Printf("Still sub topic: %s\n", topicName)
-		}
 		sess.ws.Close()
 	}
 }
@@ -59,7 +55,6 @@ func (sess *Session) readLoop() {
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure,
 				websocket.CloseNormalClosure) {
-				log.Println("||||||||")
 				log.Println("ws: readLoop", sess.sid, err)
 			}
 			return
