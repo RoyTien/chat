@@ -599,7 +599,7 @@ func (s *Session) leave(msg *ClientComMessage) {
 	// Expand topic name
 	var resp *ServerComMessage
 	msg.RcptTo, resp = s.expandTopicName(msg)
-	log.Printf("Session Leave | %s\n", msg.RcptTo)
+	log.Printf("Session Leave | %s | %s\n", msg.Original, msg.MetaWhat)
 	if resp != nil {
 		s.queueOut(resp)
 		return
