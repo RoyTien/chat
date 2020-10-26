@@ -655,8 +655,14 @@ func (s *Session) publish(msg *ClientComMessage) {
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
 		log.Println("Check pub |, to a subscribed topic")
+		keys := make([]string, 0, len(s.subs))
+		for k := range s.subs {
+			keys = append(keys, k)
+		}
+		log.Println("--------------")
 		log.Printf("Check pub | sid is %s\n", s.sid)
 		log.Printf("Check pub | uid is %s\n", s.uid)
+		log.Println(keys)
 		sub.broadcast <- data
 	} else if msg.RcptTo == "sys" {
 		// Publishing to "sys" topic requires no subsription.

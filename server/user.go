@@ -719,7 +719,7 @@ func usersPush(rcpt *push.Receipt) {
 
 	var local *UserCacheReq
 
-	log.Println("Chech user push |")
+	log.Println("Check user push |")
 
 	// In case of a cluster pushes will be initiated at the nodes which own the users.
 	// Sort users into local and remote.
@@ -754,7 +754,7 @@ func usersPush(rcpt *push.Receipt) {
 	if len(local.PushRcpt.To) > 0 || local.PushRcpt.Channel != "" {
 		select {
 		case globals.usersUpdate <- local:
-			log.Println("Chech user push ||")
+			log.Println("Check user push ||")
 		default:
 		}
 	}
