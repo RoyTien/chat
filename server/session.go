@@ -660,8 +660,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 			keys = append(keys, k)
 		}
 		log.Println("--------------")
-		log.Printf("Check pub | sid is %s\n", s.sid)
-		log.Printf("Check pub | uid is %s\n", s.uid)
+		log.Printf("Check pub | sid is %s | uid is %s\n", s.sid, s.uid)
 		log.Println(keys)
 		sub.broadcast <- data
 	} else if msg.RcptTo == "sys" {
@@ -1124,7 +1123,7 @@ func (s *Session) note(msg *ClientComMessage) {
 		// Silently ignoring the message
 		return
 	}
-	log.Printf("Check note | msg.RcptTo: %s.\n", msg.RcptTo)
+	//log.Printf("Check note | msg.RcptTo: %s.\n", msg.RcptTo)
 	switch msg.Note.What {
 	case "kp":
 		if msg.Note.SeqId != 0 {
