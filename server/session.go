@@ -506,6 +506,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Id = msg.Acc.Id
 
 	case msg.Note != nil:
+		log.Println("Check note |")
 		handler = s.note
 		msg.Original = msg.Note.Topic
 		uaRefresh = true
@@ -1127,9 +1128,10 @@ func (s *Session) note(msg *ClientComMessage) {
 	default:
 		return
 	}
-
+	log.Println("Check note ||")
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// Pings can be sent to subscribed topics only
+		log.Println("Check note |||")
 		sub.broadcast <- &ServerComMessage{
 			Info: &MsgServerInfo{
 				Topic: msg.Original,
@@ -1142,6 +1144,7 @@ func (s *Session) note(msg *ClientComMessage) {
 			SkipSid:   s.sid,
 			sess:      s}
 	} else {
+		log.Println("Check note ||||")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.note: note to invalid topic - must subscribe first", msg.Note.What, s.sid)
 	}
