@@ -198,7 +198,7 @@ func (s *Session) getSub(topic string) *Subscription {
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
 	// RoyTien
-	log.Println("Check getsub")
+	//log.Println("Check getsub")
 	return s.subs[topic]
 }
 
@@ -477,6 +477,25 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		handler = checkVers(msg, checkUser(msg, s.leave))
 		msg.Id = msg.Leave.Id
 		msg.Original = msg.Leave.Topic
+		// RoyTien
+		//id := msg.Leave.Id
+		//topicName := msg.Leave.Topic
+
+
+		// RoyTien
+		log.Printf("Topic: %s\n", msg.Leave.Topic)
+		//msg = &ClientComMessage{
+		//	Del: &MsgClientDel{
+		//		Id: id,
+		//		Topic: msg.Leave.Topic,
+		//		What: "topic",
+		//		Hard: true,
+		//	},
+		//	RcptTo: topicName,
+		//	Original: topicName,
+		//	Id: id,
+		//}
+		//handler = checkVers(msg, checkUser(msg, s.del))
 
 	case msg.Hi != nil:
 		handler = s.hello
@@ -657,7 +676,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
 		// RoyTien
-		log.Println("Check pub |, to a subscribed topic")
+		//log.Println("Check pub |, to a subscribed topic")
 		keys := make([]string, 0, len(s.subs))
 		for k := range s.subs {
 			keys = append(keys, k)
@@ -672,7 +691,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 	} else {
 		// Publish request received without attaching to topic first.
 		// RoyTien
-		log.Println("Check pub |, without attaching to topic")
+		//log.Println("Check pub |, without attaching to topic")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.publish:", "must attach first", s.sid)
 	}

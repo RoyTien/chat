@@ -3232,12 +3232,12 @@ func (t *Topic) isDeleted() bool {
 // Get topic name suitable for the given client
 func (t *Topic) original(uid types.Uid) string {
 	// RoyTien
-	keys := make([]types.Uid, 0, len(t.perUser))
-	for k := range t.perUser {
-		keys = append(keys, k)
-	}
-	log.Println("Check original |")
-	log.Println(keys)
+	//keys := make([]types.Uid, 0, len(t.perUser))
+	//for k := range t.perUser {
+	//	keys = append(keys, k)
+	//}
+	//log.Println("Check original |")
+	//log.Println(keys)
 	if t.cat == types.TopicCatP2P {
 		if pud, ok := t.perUser[uid]; ok {
 			return pud.topicName
