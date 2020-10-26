@@ -655,12 +655,14 @@ func (s *Session) publish(msg *ClientComMessage) {
 	}
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
+		log.Println("Check pub |, to a subscribed topic")
 		sub.broadcast <- data
 	} else if msg.RcptTo == "sys" {
 		// Publishing to "sys" topic requires no subsription.
 		globals.hub.route <- data
 	} else {
 		// Publish request received without attaching to topic first.
+		log.Println("Check pub |, without attaching to topic")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.publish:", "must attach first", s.sid)
 	}
