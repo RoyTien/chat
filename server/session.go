@@ -1064,6 +1064,10 @@ func (s *Session) set(msg *ClientComMessage) {
 		meta.pkt.MetaWhat = constMsgMetaDesc
 	}
 	if msg.Set.Sub != nil {
+		// RoyTien
+		if _, ok := s.subs[msg.RcptTo]; ok {
+			return
+		}
 		meta.pkt.MetaWhat |= constMsgMetaSub
 	}
 	if msg.Set.Tags != nil {
