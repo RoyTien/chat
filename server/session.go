@@ -477,25 +477,24 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		handler = checkVers(msg, checkUser(msg, s.leave))
 		msg.Id = msg.Leave.Id
 		msg.Original = msg.Leave.Topic
-		// RoyTien
-		//id := msg.Leave.Id
-		//topicName := msg.Leave.Topic
-
 
 		// RoyTien
-		log.Printf("Topic: %s\n", msg.Leave.Topic)
-		//msg = &ClientComMessage{
-		//	Del: &MsgClientDel{
-		//		Id: id,
-		//		Topic: msg.Leave.Topic,
-		//		What: "topic",
-		//		Hard: true,
-		//	},
-		//	RcptTo: topicName,
-		//	Original: topicName,
-		//	Id: id,
-		//}
-		//handler = checkVers(msg, checkUser(msg, s.del))
+		if isChatroom(msg.Leave.Topic) {
+			id := msg.Leave.Id
+			topicName := msg.Leave.Topic
+			msg = &ClientComMessage{
+				Del: &MsgClientDel{
+					Id: id,
+					Topic: msg.Leave.Topic,
+					What: "topic",
+					Hard: true,
+				},
+				RcptTo: topicName,
+				Original: topicName,
+				Id: id,
+			}
+			handler = checkVers(msg, checkUser(msg, s.del))
+		}
 
 	case msg.Hi != nil:
 		handler = s.hello
