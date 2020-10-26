@@ -482,6 +482,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		if isChatroom(msg.Leave.Topic) {
 			id := msg.Leave.Id
 			topicName := msg.Leave.Topic
+			uid := msg.AsUser
 			msg = &ClientComMessage{
 				Del: &MsgClientDel{
 					Id: id,
@@ -492,6 +493,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 				RcptTo: topicName,
 				Original: topicName,
 				Id: id,
+				AsUser: uid,
 			}
 			handler = checkVers(msg, checkUser(msg, s.del))
 		}
