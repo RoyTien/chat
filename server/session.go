@@ -572,14 +572,15 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 		}
 	}
 
+	// RoyTien
 	// violates one chatroom policy
-	for topicName, _ := range s.subs {
-		if isChatroom(topicName) {
-			resp := ErrSubChatroom(msg.Id, msg.RcptTo, msg.Timestamp)
-			s.queueOut(resp)
-			return
-		}
-	}
+	//for topicName, _ := range s.subs {
+	//	if isChatroom(topicName) {
+	//		resp := ErrSubChatroom(msg.Id, msg.RcptTo, msg.Timestamp)
+	//		s.queueOut(resp)
+	//		return
+	//	}
+	//}
 
 	// Session can subscribe to topic on behalf of a single user at a time.
 	if sub := s.getSub(msg.RcptTo); sub != nil {
