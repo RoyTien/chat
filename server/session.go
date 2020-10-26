@@ -197,7 +197,7 @@ func (s *Session) getSub(topic string) *Subscription {
 
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
-
+	log.Println("Check getsub")
 	return s.subs[topic]
 }
 
@@ -506,7 +506,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Id = msg.Acc.Id
 
 	case msg.Note != nil:
-		log.Println("Check note |")
 		handler = s.note
 		msg.Original = msg.Note.Topic
 		uaRefresh = true
@@ -656,6 +655,8 @@ func (s *Session) publish(msg *ClientComMessage) {
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
 		log.Println("Check pub |, to a subscribed topic")
+		log.Printf("Check pub | sid is %s\n", s.sid)
+		log.Printf("Check pub | uid is %s\n", s.uid)
 		sub.broadcast <- data
 	} else if msg.RcptTo == "sys" {
 		// Publishing to "sys" topic requires no subsription.
@@ -1130,10 +1131,8 @@ func (s *Session) note(msg *ClientComMessage) {
 	default:
 		return
 	}
-	log.Println("Check note ||")
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// Pings can be sent to subscribed topics only
-		log.Println("Check note |||")
 		sub.broadcast <- &ServerComMessage{
 			Info: &MsgServerInfo{
 				Topic: msg.Original,
@@ -1146,7 +1145,6 @@ func (s *Session) note(msg *ClientComMessage) {
 			SkipSid:   s.sid,
 			sess:      s}
 	} else {
-		log.Println("Check note ||||")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.note: note to invalid topic - must subscribe first", msg.Note.What, s.sid)
 	}
