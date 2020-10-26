@@ -1124,7 +1124,7 @@ func (s *Session) note(msg *ClientComMessage) {
 		// Silently ignoring the message
 		return
 	}
-
+	log.Printf("Check note | msg.RcptTo: %s.\n", msg.RcptTo)
 	switch msg.Note.What {
 	case "kp":
 		if msg.Note.SeqId != 0 {

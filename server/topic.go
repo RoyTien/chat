@@ -829,6 +829,7 @@ func (t *Topic) sendSubNotifications(asUid types.Uid, sid, userAgent string) {
 // handleBroadcast fans out broadcastable messages to recipients in topic and proxy_topic.
 func (t *Topic) handleBroadcast(msg *ServerComMessage) {
 	asUid := types.ParseUserId(msg.AsUser)
+	log.Printf("Handle Broadcase | uid: %s | sid: %s\n", asUid, msg.sess.sid)
 	if t.isInactive() {
 		// Ignore broadcast - topic is paused or being deleted.
 		if msg.Data != nil {
