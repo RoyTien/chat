@@ -197,6 +197,7 @@ func (s *Session) getSub(topic string) *Subscription {
 
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
+	// RoyTien
 	log.Println("Check getsub")
 	return s.subs[topic]
 }
@@ -654,6 +655,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 	}
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
+		// RoyTien
 		log.Println("Check pub |, to a subscribed topic")
 		keys := make([]string, 0, len(s.subs))
 		for k := range s.subs {
@@ -668,6 +670,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 		globals.hub.route <- data
 	} else {
 		// Publish request received without attaching to topic first.
+		// RoyTien
 		log.Println("Check pub |, without attaching to topic")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.publish:", "must attach first", s.sid)
@@ -1123,6 +1126,7 @@ func (s *Session) note(msg *ClientComMessage) {
 		// Silently ignoring the message
 		return
 	}
+	// RoyTien
 	//log.Printf("Check note | msg.RcptTo: %s.\n", msg.RcptTo)
 	switch msg.Note.What {
 	case "kp":

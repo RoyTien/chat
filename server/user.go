@@ -719,6 +719,7 @@ func usersPush(rcpt *push.Receipt) {
 
 	var local *UserCacheReq
 
+	// RoyTien
 	log.Println("Check user push |")
 
 	// In case of a cluster pushes will be initiated at the nodes which own the users.
@@ -754,6 +755,7 @@ func usersPush(rcpt *push.Receipt) {
 	if len(local.PushRcpt.To) > 0 || local.PushRcpt.Channel != "" {
 		select {
 		case globals.usersUpdate <- local:
+			// RoyTien
 			log.Println("Check user push ||")
 		default:
 		}

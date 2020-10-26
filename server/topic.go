@@ -829,10 +829,10 @@ func (t *Topic) sendSubNotifications(asUid types.Uid, sid, userAgent string) {
 // handleBroadcast fans out broadcastable messages to recipients in topic and proxy_topic.
 func (t *Topic) handleBroadcast(msg *ServerComMessage) {
 	asUid := types.ParseUserId(msg.AsUser)
-	log.Printf("Handle Broadcast | uid: %s | sid: %s\n", asUid, msg.sess.sid)
 	if t.isInactive() {
 		// Ignore broadcast - topic is paused or being deleted.
 		if msg.Data != nil {
+			log.Printf("Handle Broadcast | uid: %s\n", asUid)
 			msg.sess.queueOut(ErrLocked(msg.Id, t.original(asUid), msg.Timestamp))
 		}
 		return
@@ -3231,6 +3231,13 @@ func (t *Topic) isDeleted() bool {
 
 // Get topic name suitable for the given client
 func (t *Topic) original(uid types.Uid) string {
+	// RoyTien
+	keys := make([]types.Uid, 0, len(t.perUser))
+	for k := range t.perUser {
+		keys = append(keys, k)
+	}
+	log.Println("Check original |")
+	log.Println(keys)
 	if t.cat == types.TopicCatP2P {
 		if pud, ok := t.perUser[uid]; ok {
 			return pud.topicName
