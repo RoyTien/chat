@@ -480,24 +480,25 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 
 		// RoyTien
 		if isChatroom(msg.Leave.Topic) {
-			//msg.Leave.Unsub = true
-			id := msg.Leave.Id
-			topicName := msg.Leave.Topic
-			uid := msg.AsUser
-			msg = &ClientComMessage{
-				Del: &MsgClientDel{
-					Id: id,
-					Topic: topicName,
-					What: "sub",
-					User: uid,
-					//Hard: true,
-				},
-				RcptTo: topicName,
-				Original: topicName,
-				Id: id,
-				AsUser: uid,
-			}
-			handler = checkVers(msg, checkUser(msg, s.del))
+			msg.Leave.Unsub = true
+			//id := msg.Leave.Id
+			//topicName := msg.Leave.Topic
+			//uid := msg.AsUser
+			//msg = &ClientComMessage{
+			//	Del: &MsgClientDel{
+			//		Id: id,
+			//		Topic: topicName,
+			//		What: "topic",
+			//		//What: "sub",
+			//		//User: uid,
+			//		Hard: true,
+			//	},
+			//	RcptTo: topicName,
+			//	Original: topicName,
+			//	Id: id,
+			//	AsUser: uid,
+			//}
+			//handler = checkVers(msg, checkUser(msg, s.del))
 		}
 
 	case msg.Hi != nil:
@@ -685,6 +686,7 @@ func (s *Session) publish(msg *ClientComMessage) {
 		for k := range s.subs {
 			keys = append(keys, k)
 		}
+		// RoyTien
 		log.Println("--------------")
 		log.Printf("Check pub | sid is %s | uid is %s\n", s.sid, s.uid)
 		log.Println(keys)
