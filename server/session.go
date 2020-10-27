@@ -480,22 +480,23 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 
 		// RoyTien
 		if isChatroom(msg.Leave.Topic) {
-			id := msg.Leave.Id
-			topicName := msg.Leave.Topic
-			uid := msg.AsUser
-			msg = &ClientComMessage{
-				Del: &MsgClientDel{
-					Id: id,
-					Topic: msg.Leave.Topic,
-					What: "topic",
-					Hard: true,
-				},
-				RcptTo: topicName,
-				Original: topicName,
-				Id: id,
-				AsUser: uid,
-			}
-			handler = checkVers(msg, checkUser(msg, s.del))
+			msg.Leave.Unsub = true
+			//id := msg.Leave.Id
+			//topicName := msg.Leave.Topic
+			//uid := msg.AsUser
+			//msg = &ClientComMessage{
+			//	Del: &MsgClientDel{
+			//		Id: id,
+			//		Topic: msg.Leave.Topic,
+			//		What: "topic",
+			//		Hard: true,
+			//	},
+			//	RcptTo: topicName,
+			//	Original: topicName,
+			//	Id: id,
+			//	AsUser: uid,
+			//}
+			//handler = checkVers(msg, checkUser(msg, s.del))
 		}
 
 	case msg.Hi != nil:
