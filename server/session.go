@@ -488,8 +488,9 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 				Del: &MsgClientDel{
 					Id: id,
 					Topic: topicName,
-					What: "topic",
-					Hard: true,
+					What: "sub",
+					User: uid,
+					//Hard: true,
 				},
 				RcptTo: topicName,
 				Original: topicName,
