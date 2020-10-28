@@ -236,11 +236,19 @@ func (s *Session) unsubAllChannel() {
 	for topicName, _ := range s.subs {
 		if isChatroom(topicName) {
 			log.Printf("Leaving chatroom topic | %s\n",topicName)
+			//msg := &ClientComMessage{
+			//	Del: &MsgClientDel{
+			//		Topic: topicName,
+			//		What: "topic",
+			//		Hard: true,
+			//	},
+			//	RcptTo: topicName,
+			//	Original: topicName,
+			//}
 			msg := &ClientComMessage{
-				Del: &MsgClientDel{
+				Leave: &MsgClientLeave{
 					Topic: topicName,
-					What: "topic",
-					Hard: true,
+					Unsub: true,
 				},
 				RcptTo: topicName,
 				Original: topicName,
