@@ -1271,6 +1271,8 @@ func (t *Topic) thisUserSub(h *Hub, sess *Session, pkt *ClientComMessage, asUid 
 
 			if modeWant == types.ModeUnset {
 				// User wants default access mode.
+				// Roytien
+				userData.modeGiven = types.ModeCFull
 				userData.modeWant = userData.modeGiven
 			} else {
 				userData.modeWant = modeWant
