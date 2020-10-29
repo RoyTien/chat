@@ -1267,12 +1267,13 @@ func (t *Topic) thisUserSub(h *Hub, sess *Session, pkt *ClientComMessage, asUid 
 			tname = pkt.Original
 		} else {
 			// For all other topics access is given as default access.
-			userData.modeGiven = t.accessFor(asLvl)
+			//userData.modeGiven = t.accessFor(asLvl)
+			// Roytien
+			userData.modeGiven = t.accessFor(auth.LevelRoot)
 
 			if modeWant == types.ModeUnset {
 				// User wants default access mode.
-				// Roytien
-				//userData.modeGiven = types.ModeCFull
+
 				userData.modeWant = userData.modeGiven
 			} else {
 				userData.modeWant = modeWant
