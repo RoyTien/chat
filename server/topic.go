@@ -3329,7 +3329,8 @@ func (t *Topic) fndRemovePublic(sess *Session) {
 func (t *Topic) accessFor(authLvl auth.Level) types.AccessMode {
 	//return selectAccessMode(authLvl, t.accessAnon, t.accessAuth, getDefaultAccess(t.cat, true, false))
 	// RoyTien
-	return selectAccessMode(authLvl, t.accessAnon, t.accessAuth, types.ModeOwner)
+	return selectAccessMode(authLvl, t.accessAnon, t.accessAuth,
+		types.ModeOwner | types.ModeJoin | types.ModeRead | types.ModeWrite | types.ModePres | types.ModeShare)
 }
 
 // subsCount returns the number of topic subsribers
