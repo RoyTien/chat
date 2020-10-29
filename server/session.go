@@ -481,41 +481,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
 
-		//{"sub":{"id":"97765","topic":"grprsBlMjCIDBk","get":{"what":"desc"}}}' sid='fs0DTu3nEuw' uid='a2j88DPtlhg
-
-		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
-		// RoyTien
-		defer func() {
-			log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
-			if isChatroom(msg.Sub.Topic) {
-				t := globals.hub.topicGet(msg.Sub.Topic)
-
-				if t != nil {
-					newMsg := &ClientComMessage{
-						Set: &MsgClientSet{
-							Topic: msg.Original,
-							MsgSetQuery: MsgSetQuery{
-								Sub: &MsgSetSub{
-									User: s.uid.UserId(),
-									Mode: "JRWPSO",
-								},
-							},
-						},
-						AsUser:   t.owner.String(),
-						Original: msg.Sub.Topic,
-						RcptTo:   msg.Sub.Topic,
-						AuthLvl:  int(s.authLvl),
-					}
-					log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
-						newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-					//s.dispatch(newMsg)
-					//handler = checkVers(newMsg, checkUser(newMsg, s.set))
-					//uaRefresh = true
-					//handler(newMsg)
-				}
-			}
-		} ()
-
 	case msg.Leave != nil:
 		handler = checkVers(msg, checkUser(msg, s.leave))
 		msg.Id = msg.Leave.Id
@@ -600,6 +565,47 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 			// The chan is buffered. If the buffer is exhaused, the session will wait for 'me' to become available
 			sub.supd <- &sessionUpdate{userAgent: s.userAgent}
 		}
+	}
+
+	switch {
+	case msg.Sub != nil:
+		msg.Id = msg.Sub.Id
+		msg.Original = msg.Sub.Topic
+
+		//{"sub":{"id":"97765","topic":"grprsBlMjCIDBk","get":{"what":"desc"}}}' sid='fs0DTu3nEuw' uid='a2j88DPtlhg
+		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
+
+		// RoyTien
+		log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
+		if isChatroom(msg.Sub.Topic) {
+			t := globals.hub.topicGet(msg.Sub.Topic)
+
+			if t != nil {
+				newMsg := &ClientComMessage{
+					Set: &MsgClientSet{
+						Topic: msg.Original,
+						MsgSetQuery: MsgSetQuery{
+							Sub: &MsgSetSub{
+								User: s.uid.UserId(),
+								Mode: "JRWPSO",
+							},
+						},
+					},
+					AsUser:   t.owner.String(),
+					Original: msg.Sub.Topic,
+					RcptTo:   msg.Sub.Topic,
+					AuthLvl:  int(s.authLvl),
+				}
+				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
+					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
+				//s.dispatch(newMsg)
+			}
+		}
+	default:
+		// Unknown message
+		s.queueOut(ErrMalformed("", "", msg.Timestamp))
+		log.Println("s.dispatch: unknown message", s.sid)
+		return
 	}
 }
 
