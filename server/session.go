@@ -530,7 +530,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 		// RoyTien
-		log.Printf("SET | AsUser: %s | AuthLvl: %s |\n", msg.AsUser, msg.AuthLvl)
+		log.Printf("SET | MetaWhat: %d | AuthLvl: %d |\n", msg.MetaWhat, msg.AuthLvl)
 
 	case msg.Del != nil:
 		handler = checkVers(msg, checkUser(msg, s.del))
@@ -589,7 +589,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 						MsgSetQuery: MsgSetQuery{
 							Sub: &MsgSetSub{
 								User: s.uid.UserId(),
-								Mode: "JRWPSO",
+								Mode: "JRWPASDO",
 							},
 						},
 					},
@@ -597,11 +597,13 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 					Original: msg.Sub.Topic,
 					RcptTo:   msg.Sub.Topic,
 					//AuthLvl:  int(auth.LevelRoot),
-					AuthLvl:  int(s.authLvl),
+					AuthLvl:  int(auth.LevelAuth),
 				}
 				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
 					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-				//s.dispatch(newMsg)
+				log.Printf("Owner modeGiven: %d | modeWant: %d\n",
+					t.perUser[t.owner].modeGiven, t.perUser[t.owner].modeWant)
+				s.dispatch(newMsg)
 			}
 		}
 	default:
