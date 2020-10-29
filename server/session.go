@@ -674,8 +674,7 @@ func (s *Session) leave(msg *ClientComMessage) {
 			s.queueOut(ErrPermissionDeniedReply(msg, msg.Timestamp))
 		} else {
 			// Unlink from topic, topic will send a reply.
-			// RoyTien
-			//log.Printf("LEAVE | %s | %s | %s \n", msg.Leave.Id, msg.AsUser, msg.RcptTo)
+			log.Printf("LEAVE | %s | %s | %s \n", msg.Leave.Id, msg.AsUser, msg.RcptTo)
 			s.delSub(msg.RcptTo)
 			s.inflightReqs.Add(1)
 			sub.done <- &sessionLeave{
