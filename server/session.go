@@ -530,6 +530,9 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Set.Topic
 		uaRefresh = true
 
+		// RoyTien
+		log.Printf("SET | AsUser: %s | AuthLvl: %s |\n", msg.AsUser, msg.AsUser)
+
 	case msg.Del != nil:
 		handler = checkVers(msg, checkUser(msg, s.del))
 		msg.Id = msg.Del.Id
