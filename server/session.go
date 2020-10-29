@@ -480,7 +480,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Id = msg.Sub.Id
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
-		log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
 
 	case msg.Leave != nil:
 		handler = checkVers(msg, checkUser(msg, s.leave))
@@ -531,7 +530,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 		// RoyTien
-		log.Printf("SET | AsUser: %s | AuthLvl: %s |\n", msg.AsUser, msg.AsUser)
+		log.Printf("SET | AsUser: %s | AuthLvl: %s |\n", msg.AsUser, msg.AuthLvl)
 
 	case msg.Del != nil:
 		handler = checkVers(msg, checkUser(msg, s.del))
@@ -602,13 +601,10 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 				}
 				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
 					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-				s.dispatch(newMsg)
+				//s.dispatch(newMsg)
 			}
 		}
 	default:
-		// Unknown message
-		s.queueOut(ErrMalformed("", "", msg.Timestamp))
-		log.Println("s.dispatch: unknown message", s.sid)
 		return
 	}
 }
