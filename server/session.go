@@ -468,8 +468,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		}
 	}
 
-	log.Println("|||||||||||||")
-
 	switch {
 	case msg.Pub != nil:
 		handler = checkVers(msg, checkUser(msg, s.publish))
@@ -478,7 +476,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 	case msg.Sub != nil:
-		log.Println("|||||||||||||")
 		handler = checkVers(msg, checkUser(msg, s.subscribe))
 		msg.Id = msg.Sub.Id
 		msg.Original = msg.Sub.Topic
@@ -580,8 +577,8 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
 
 		// RoyTien
-		log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
 		if isChatroom(msg.Sub.Topic) {
+			log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
 			t := globals.hub.topicGet(msg.Sub.Topic)
 
 			if t != nil {
