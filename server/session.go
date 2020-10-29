@@ -480,6 +480,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Id = msg.Sub.Id
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
+		log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
 
 	case msg.Leave != nil:
 		handler = checkVers(msg, checkUser(msg, s.leave))
