@@ -479,8 +479,14 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 		// RoyTien
+		log.Println("Msg Sub New #{msg.Sub.Newsub}")
 		if isChatroom(msg.Sub.Topic) {
-			log.Println("SUB Get Sub Topic #{msg.Sub.Get.Sub.Topic}")
+			if msg.Sub.Get != nil {
+				log.Println("111111")
+			}
+			if msg.Sub.Set != nil {
+				log.Println("222222")
+			}
 		}
 
 	case msg.Leave != nil:
