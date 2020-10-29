@@ -468,6 +468,8 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		}
 	}
 
+	log.Println("|||||||||||||")
+
 	switch {
 	case msg.Pub != nil:
 		handler = checkVers(msg, checkUser(msg, s.publish))
@@ -476,6 +478,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 	case msg.Sub != nil:
+		log.Println("|||||||||||||")
 		handler = checkVers(msg, checkUser(msg, s.subscribe))
 		msg.Id = msg.Sub.Id
 		msg.Original = msg.Sub.Topic
