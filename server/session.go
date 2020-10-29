@@ -197,8 +197,6 @@ func (s *Session) getSub(topic string) *Subscription {
 
 	s.subsLock.RLock()
 	defer s.subsLock.RUnlock()
-	// RoyTien
-	//log.Println("Check getsub")
 	return s.subs[topic]
 }
 
@@ -433,7 +431,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 	var resp *ServerComMessage
 	if msg, resp = pluginFireHose(s, msg); resp != nil {
 		// Plugin provided a response. No further processing is needed.
-		log.Println("Something is wrong |||")
 		s.queueOut(resp)
 		return
 	} else if msg == nil {
@@ -489,24 +486,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		// RoyTien
 		if isChatroom(msg.Leave.Topic) {
 			msg.Leave.Unsub = true
-			//id := msg.Leave.Id
-			//topicName := msg.Leave.Topic
-			//uid := msg.AsUser
-			//msg = &ClientComMessage{
-			//	Del: &MsgClientDel{
-			//		Id: id,
-			//		Topic: topicName,
-			//		What: "topic",
-			//		//What: "sub",
-			//		//User: uid,
-			//		Hard: true,
-			//	},
-			//	RcptTo: topicName,
-			//	Original: topicName,
-			//	Id: id,
-			//	AsUser: uid,
-			//}
-			//handler = checkVers(msg, checkUser(msg, s.del))
 		}
 
 	case msg.Hi != nil:
@@ -530,7 +509,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		uaRefresh = true
 
 		// RoyTien
-		log.Printf("SET | MetaWhat: %d | AuthLvl: %d |\n", msg.MetaWhat, msg.AuthLvl)
+		log.Println("SET | MetaWhat: #{msg.MetaWhat} | AuthLvl: #{msg.AuthLvl}")
 
 	case msg.Del != nil:
 		handler = checkVers(msg, checkUser(msg, s.del))
@@ -569,46 +548,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 			sub.supd <- &sessionUpdate{userAgent: s.userAgent}
 		}
 	}
-
-	switch {
-	case msg.Sub != nil:
-		msg.Id = msg.Sub.Id
-		msg.Original = msg.Sub.Topic
-
-		//{"sub":{"id":"97765","topic":"grprsBlMjCIDBk","get":{"what":"desc"}}}' sid='fs0DTu3nEuw' uid='a2j88DPtlhg
-		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
-
-		// RoyTien
-		if isChatroom(msg.Sub.Topic) {
-			t := globals.hub.topicGet(msg.Sub.Topic)
-
-			if t != nil {
-				newMsg := &ClientComMessage{
-					Set: &MsgClientSet{
-						Topic: msg.Original,
-						MsgSetQuery: MsgSetQuery{
-							Sub: &MsgSetSub{
-								User: s.uid.UserId(),
-								Mode: "JRWPASDO",
-							},
-						},
-					},
-					AsUser:   t.owner.String(),
-					Original: msg.Sub.Topic,
-					RcptTo:   msg.Sub.Topic,
-					//AuthLvl:  int(auth.LevelRoot),
-					AuthLvl:  int(auth.LevelAuth),
-				}
-				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
-					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-				log.Printf("Owner modeGiven: %d | modeWant: %d\n",
-					t.perUser[t.owner].modeGiven, t.perUser[t.owner].modeWant)
-				s.dispatch(newMsg)
-			}
-		}
-	default:
-		return
-	}
 }
 
 // Request to subscribe to a topic.
@@ -625,16 +564,6 @@ func (s *Session) subscribe(msg *ClientComMessage) {
 			return
 		}
 	}
-
-	// RoyTien
-	// violates one chatroom policy
-	//for topicName, _ := range s.subs {
-	//	if isChatroom(topicName) {
-	//		resp := ErrSubChatroom(msg.Id, msg.RcptTo, msg.Timestamp)
-	//		s.queueOut(resp)
-	//		return
-	//	}
-	//}
 
 	// Session can subscribe to topic on behalf of a single user at a time.
 	if sub := s.getSub(msg.RcptTo); sub != nil {
@@ -672,6 +601,7 @@ func (s *Session) leave(msg *ClientComMessage) {
 			s.queueOut(ErrPermissionDeniedReply(msg, msg.Timestamp))
 		} else {
 			// Unlink from topic, topic will send a reply.
+			// RoyTien
 			log.Printf("LEAVE | %s | %s | %s \n", msg.Leave.Id, msg.AsUser, msg.RcptTo)
 			s.delSub(msg.RcptTo)
 			s.inflightReqs.Add(1)
@@ -731,24 +661,12 @@ func (s *Session) publish(msg *ClientComMessage) {
 	}
 	if sub := s.getSub(msg.RcptTo); sub != nil {
 		// This is a post to a subscribed topic. The message is sent to the topic only
-		// RoyTien
-		//log.Println("Check pub |, to a subscribed topic")
-		keys := make([]string, 0, len(s.subs))
-		for k := range s.subs {
-			keys = append(keys, k)
-		}
-		// RoyTien
-		log.Println("--------------")
-		log.Printf("Check pub | sid is %s | uid is %s\n", s.sid, s.uid)
-		log.Println(keys)
 		sub.broadcast <- data
 	} else if msg.RcptTo == "sys" {
 		// Publishing to "sys" topic requires no subsription.
 		globals.hub.route <- data
 	} else {
 		// Publish request received without attaching to topic first.
-		// RoyTien
-		//log.Println("Check pub |, without attaching to topic")
 		s.queueOut(ErrAttachFirst(msg, msg.Timestamp))
 		log.Println("s.publish:", "must attach first", s.sid)
 	}
@@ -1203,8 +1121,6 @@ func (s *Session) note(msg *ClientComMessage) {
 		// Silently ignoring the message
 		return
 	}
-	// RoyTien
-	//log.Printf("Check note | msg.RcptTo: %s.\n", msg.RcptTo)
 	switch msg.Note.What {
 	case "kp":
 		if msg.Note.SeqId != 0 {
