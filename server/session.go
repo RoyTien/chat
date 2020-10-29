@@ -578,7 +578,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 
 		// RoyTien
 		if isChatroom(msg.Sub.Topic) {
-			log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
 			t := globals.hub.topicGet(msg.Sub.Topic)
 
 			if t != nil {
@@ -599,7 +598,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 				}
 				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
 					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-				//s.dispatch(newMsg)
+				s.dispatch(newMsg)
 			}
 		}
 	default:
