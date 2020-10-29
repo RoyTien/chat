@@ -594,7 +594,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 					AsUser:   t.owner.String(),
 					Original: msg.Sub.Topic,
 					RcptTo:   msg.Sub.Topic,
-					AuthLvl:  int(s.authLvl),
+					AuthLvl:  int(auth.LevelRoot),
 				}
 				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
 					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
