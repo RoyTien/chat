@@ -481,6 +481,36 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
 
+		//{"sub":{"id":"97765","topic":"grprsBlMjCIDBk","get":{"what":"desc"}}}' sid='fs0DTu3nEuw' uid='a2j88DPtlhg
+
+		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
+		// RoyTien
+		defer func() {
+			t := globals.hub.topicGet(msg.Leave.Topic)
+			if t != nil {
+				newMsg := &ClientComMessage{
+					Set: &MsgClientSet{
+						Topic: msg.Original,
+						MsgSetQuery: MsgSetQuery{
+							Sub: &MsgSetSub{
+								User: s.uid.UserId(),
+								Mode: "JRWPSO",
+							},
+						},
+					},
+					AsUser: t.owner.String(),
+					Original: msg.Sub.Topic,
+					RcptTo: msg.Sub.Topic,
+					AuthLvl: int(s.authLvl),
+				}
+				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s", newMsg.Set.Sub.User, newMsg.Set.Sub.Mode)
+				//s.dispatch(newMsg)
+				//handler = checkVers(newMsg, checkUser(newMsg, s.set))
+				//uaRefresh = true
+				//handler(newMsg)
+			}
+		} ()
+
 	case msg.Leave != nil:
 		handler = checkVers(msg, checkUser(msg, s.leave))
 		msg.Id = msg.Leave.Id

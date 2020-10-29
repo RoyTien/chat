@@ -1482,9 +1482,7 @@ func (t *Topic) thisUserSub(h *Hub, sess *Session, pkt *ClientComMessage, asUid 
 		modeChanged = &MsgAccessMode{
 			Want:  userData.modeWant.String(),
 			Given: userData.modeGiven.String(),
-			//Mode:  (userData.modeGiven & userData.modeWant).String(),
-			// RoyTien
-			Mode: "JRWPO",
+			Mode:  (userData.modeGiven & userData.modeWant).String(),
 		}
 	}
 
