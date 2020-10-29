@@ -486,29 +486,33 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
 		// RoyTien
 		defer func() {
-			t := globals.hub.topicGet(msg.Sub.Topic)
-			if t != nil {
-				newMsg := &ClientComMessage{
-					Set: &MsgClientSet{
-						Topic: msg.Original,
-						MsgSetQuery: MsgSetQuery{
-							Sub: &MsgSetSub{
-								User: s.uid.UserId(),
-								Mode: "JRWPSO",
+			log.Printf("msg.Sub.Topic: %s \n", msg.Sub.Topic)
+			if isChatroom(msg.Sub.Topic) {
+				t := globals.hub.topicGet(msg.Sub.Topic)
+
+				if t != nil {
+					newMsg := &ClientComMessage{
+						Set: &MsgClientSet{
+							Topic: msg.Original,
+							MsgSetQuery: MsgSetQuery{
+								Sub: &MsgSetSub{
+									User: s.uid.UserId(),
+									Mode: "JRWPSO",
+								},
 							},
 						},
-					},
-					AsUser: t.owner.String(),
-					Original: msg.Sub.Topic,
-					RcptTo: msg.Sub.Topic,
-					AuthLvl: int(s.authLvl),
+						AsUser:   t.owner.String(),
+						Original: msg.Sub.Topic,
+						RcptTo:   msg.Sub.Topic,
+						AuthLvl:  int(s.authLvl),
+					}
+					log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
+						newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
+					//s.dispatch(newMsg)
+					//handler = checkVers(newMsg, checkUser(newMsg, s.set))
+					//uaRefresh = true
+					//handler(newMsg)
 				}
-				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
-					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
-				//s.dispatch(newMsg)
-				//handler = checkVers(newMsg, checkUser(newMsg, s.set))
-				//uaRefresh = true
-				//handler(newMsg)
 			}
 		} ()
 
