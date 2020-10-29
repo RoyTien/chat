@@ -486,7 +486,7 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		//{"set":{"id":"80222","topic":"grprsBlMjCIDBk","sub":{"user":"usra2j88DPtlhg","mode":"JRWPSO"}}}' sid='d7fXHcj3k9U' uid='6tmB9LT5SZc'
 		// RoyTien
 		defer func() {
-			t := globals.hub.topicGet(msg.Leave.Topic)
+			t := globals.hub.topicGet(msg.Sub.Topic)
 			if t != nil {
 				newMsg := &ClientComMessage{
 					Set: &MsgClientSet{
@@ -503,7 +503,8 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 					RcptTo: msg.Sub.Topic,
 					AuthLvl: int(s.authLvl),
 				}
-				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s", newMsg.Set.Sub.User, newMsg.Set.Sub.Mode)
+				log.Printf("Msg.Set.Sub.User: %s | Msg.Set.Sub.Mode: %s | Msg.AsUser: %s \n",
+					newMsg.Set.Sub.User, newMsg.Set.Sub.Mode, newMsg.AsUser)
 				//s.dispatch(newMsg)
 				//handler = checkVers(newMsg, checkUser(newMsg, s.set))
 				//uaRefresh = true
