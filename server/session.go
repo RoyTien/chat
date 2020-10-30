@@ -522,9 +522,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Set.Topic
 		uaRefresh = true
 
-		// RoyTien
-		log.Println("SET | MetaWhat: #{msg.MetaWhat} | AuthLvl: #{msg.AuthLvl}")
-
 	case msg.Del != nil:
 		handler = checkVers(msg, checkUser(msg, s.del))
 		msg.Id = msg.Del.Id
