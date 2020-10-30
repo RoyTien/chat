@@ -1267,9 +1267,7 @@ func (t *Topic) thisUserSub(h *Hub, sess *Session, pkt *ClientComMessage, asUid 
 			tname = pkt.Original
 		} else {
 			// For all other topics access is given as default access.
-			//userData.modeGiven = t.accessFor(asLvl)
-			// Roytien
-			userData.modeGiven = t.accessFor(auth.LevelRoot)
+			userData.modeGiven = t.accessFor(asLvl)
 
 			if modeWant == types.ModeUnset {
 				// User wants default access mode.
@@ -3327,10 +3325,7 @@ func (t *Topic) fndRemovePublic(sess *Session) {
 }
 
 func (t *Topic) accessFor(authLvl auth.Level) types.AccessMode {
-	//return selectAccessMode(authLvl, t.accessAnon, t.accessAuth, getDefaultAccess(t.cat, true, false))
-	// RoyTien
-	return selectAccessMode(authLvl, t.accessAnon, t.accessAuth,
-		types.ModeOwner | types.ModeJoin | types.ModeRead | types.ModeWrite | types.ModePres | types.ModeShare)
+	return selectAccessMode(authLvl, t.accessAnon, t.accessAuth, getDefaultAccess(t.cat, true, false))
 }
 
 // subsCount returns the number of topic subsribers

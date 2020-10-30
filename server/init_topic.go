@@ -688,12 +688,8 @@ func (t *Topic) loadSubscribers() error {
 			readID:    sub.ReadSeqId,
 			recvID:    sub.RecvSeqId,
 			private:   sub.Private,
-			//modeWant:  sub.ModeWant,
-			//modeGiven: sub.ModeGiven}
-			// RoyTien
-			modeWant:  types.ModeJoin | types.ModeRead | types.ModeWrite | types.ModePres | types.ModeApprove | types.ModeShare | types.ModeOwner,
-			modeGiven: types.ModeJoin | types.ModeRead | types.ModeWrite | types.ModePres | types.ModeApprove | types.ModeShare | types.ModeOwner,
-		}
+			modeWant:  sub.ModeWant,
+			modeGiven: sub.ModeGiven}
 
 		if (sub.ModeGiven & sub.ModeWant).IsOwner() {
 			t.owner = uid

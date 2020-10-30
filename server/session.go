@@ -478,8 +478,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
 
-		// RoyTien
-		log.Printf("msg.Sub.Get.What: %s\n", msg.Sub.Get.What)
 		if isChatroom(msg.Sub.Topic) {
 			if msg.Sub.Get.Sub != nil {
 				log.Println("111111")

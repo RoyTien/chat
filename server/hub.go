@@ -525,10 +525,7 @@ func (h *Hub) stopTopicsForUser(uid types.Uid, reason int, alldone chan<- bool) 
 	count := 0
 	h.topics.Range(func(name interface{}, t interface{}) bool {
 		topic := t.(*Topic)
-		if _, isMember := topic.perUser[uid]; topic.cat != types.TopicCatGrp && isMember {
-			// RoyTien
-			//(topic.cat != types.TopicCatGrp && isMember) || topic.owner == uid {
-
+		if _, isMember := topic.perUser[uid]; (topic.cat != types.TopicCatGrp && isMember) || topic.owner == uid {
 			topic.markDeleted()
 
 			h.topics.Delete(name)
