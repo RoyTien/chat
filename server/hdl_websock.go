@@ -42,6 +42,8 @@ func (sess *Session) readLoop() {
 		sess.cleanUp(false)
 	}()
 
+	log.Println("|||||||||||||||")
+
 	sess.ws.SetReadLimit(globals.maxMessageSize)
 	sess.ws.SetReadDeadline(time.Now().Add(pongWait))
 	sess.ws.SetPongHandler(func(string) error {
@@ -66,7 +68,7 @@ func (sess *Session) readLoop() {
 
 func (sess *Session) writeLoop() {
 	ticker := time.NewTicker(pingPeriod)
-
+	log.Println("|||||||||||||||")
 	defer func() {
 		ticker.Stop()
 		// Break readLoop.
