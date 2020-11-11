@@ -481,8 +481,8 @@ func (c *Cluster) TopicMaster(msg *ClusterReq, rejected *bool) error {
 
 	// RoyTien
 	log.Printf(
-		"[Node %s] TopicMaster | msg.Node: %s | thisNodeName: %s | listenOn: %s | uid: %s | msg.ReqType: %d | Topic: %s\n",
-		globals.cluster.thisNodeName, msg.Node, c.thisNodeName, c.listenOn, msg.Sess.Uid, msg.ReqType, msg.RcptTo)
+		"[Node %s] TopicMaster | msg.Node: %s | thisNodeName: %s\n",
+		globals.cluster.thisNodeName, msg.Node, c.thisNodeName)
 
 	switch msg.ReqType {
 	case ProxyReqJoin:
