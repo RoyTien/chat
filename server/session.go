@@ -478,18 +478,6 @@ func (s *Session) dispatch(msg *ClientComMessage) {
 		msg.Original = msg.Sub.Topic
 		uaRefresh = true
 
-		if isChatroom(msg.Sub.Topic) {
-			if msg.Sub.Get.Sub != nil {
-				log.Println("111111")
-			}
-			if msg.Sub.Get.Desc != nil {
-				log.Println("222222")
-			}
-			if msg.Sub.Get.Data != nil {
-				log.Println("333333")
-			}
-		}
-
 	case msg.Leave != nil:
 		handler = checkVers(msg, checkUser(msg, s.leave))
 		msg.Id = msg.Leave.Id

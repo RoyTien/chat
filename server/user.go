@@ -737,7 +737,8 @@ func usersPush(rcpt *push.Receipt) {
 			if globals.cluster.isRemoteTopic(uid.UserId()) {
 				remote.PushRcpt.To[uid] = recipient
 			} else {
-				log.Printf("Chech user push | %d", uid)
+				// RoyTien
+				log.Printf("Check user push | %d", uid)
 				local.PushRcpt.To[uid] = recipient
 			}
 		}
