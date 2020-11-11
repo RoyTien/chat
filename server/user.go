@@ -738,7 +738,7 @@ func usersPush(rcpt *push.Receipt) {
 				remote.PushRcpt.To[uid] = recipient
 			} else {
 				// RoyTien
-				log.Printf("Check user push | %d", uid)
+				log.Printf("Check user push | %d\n", uid)
 				local.PushRcpt.To[uid] = recipient
 			}
 		}

@@ -3398,7 +3398,7 @@ func (t *Topic) addSession(sess *Session, asUid types.Uid, isChanSub bool) {
 	s := sess
 	if sess.multi != nil {
 		// RoyTien
-		log.Printf("addSession | t.name: %s | sess.multi is true\n",t.name)
+		log.Printf("[Node %s] addSession | t.name: %s | sess.multi is true\n", globals.cluster.thisNodeName, t.name)
 		s = s.multi
 	}
 
@@ -3421,7 +3421,7 @@ func (t *Topic) addSession(sess *Session, asUid types.Uid, isChanSub bool) {
 			t.sessions[s] = perSessionData{muids: []types.Uid{asUid}}
 		}
 		// RoyTien
-		log.Printf("addSession addProxiedSession | sess proto is MULTIPLEX \n")
+		log.Printf("[Node %s] addSession addProxiedSession | sess proto is MULTIPLEX \n", globals.cluster.thisNodeName)
 		t.addProxiedSession(s)
 	} else {
 		t.sessions[s] = perSessionData{uid: asUid, isChanSub: isChanSub}

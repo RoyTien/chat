@@ -376,8 +376,8 @@ func (n *ClusterNode) masterToProxyAsync(msg *ClusterResp) error {
 	var unused bool
 	// RoyTien
 	log.Printf(
-		"masterToProxyAsync | n.name: %s | msg.ReptTo: %s\n",
-		n.name, msg.RcptTo)
+		"[Node %s] masterToProxyAsync | n.name: %s | msg.ReptTo: %s\n",
+		globals.cluster.thisNodeName, n.name, msg.RcptTo)
 	if c := n.callAsync("Cluster.TopicProxy", msg, &unused, nil); c.Error != nil {
 		return c.Error
 	}
@@ -388,7 +388,7 @@ func (n *ClusterNode) masterToProxyAsync(msg *ClusterResp) error {
 func (n *ClusterNode) route(msg *ClusterRoute) error {
 	var unused bool
 	// RoyTien
-	log.Printf("ClusterNode route | n.name: %s\n", n.name)
+	log.Printf("[Node %s] ClusterNode route | n.name: %s\n", globals.cluster.thisNodeName, n.name)
 	return n.call("Cluster.Route", msg, &unused)
 }
 
@@ -481,8 +481,8 @@ func (c *Cluster) TopicMaster(msg *ClusterReq, rejected *bool) error {
 
 	// RoyTien
 	log.Printf(
-		"TopicMaster | msg.Node: %s | thisNodeName: %s | listenOn: %s | uid: %s | msg.ReqType: %d | Topic: %s\n",
-		msg.Node, c.thisNodeName, c.listenOn, msg.Sess.Uid, msg.ReqType, msg.RcptTo)
+		"[Node %s] TopicMaster | msg.Node: %s | thisNodeName: %s | listenOn: %s | uid: %s | msg.ReqType: %d | Topic: %s\n",
+		globals.cluster.thisNodeName, msg.Node, c.thisNodeName, c.listenOn, msg.Sess.Uid, msg.ReqType, msg.RcptTo)
 
 	switch msg.ReqType {
 	case ProxyReqJoin:
@@ -547,7 +547,8 @@ func (Cluster) TopicProxy(msg *ClusterResp, unused *bool) error {
 	// Find appropriate topic, send the message to it.
 	if t := globals.hub.topicGet(msg.RcptTo); t != nil {
 		// RoyTien
-		log.Printf("Cluster TopicProxy | thisNodeName: %s | topic name: %s\n", globals.cluster.thisNodeName, t.name)
+		log.Printf("[Node %s] Cluster TopicProxy | thisNodeName: %s | topic name: %s\n",
+			globals.cluster.thisNodeName, globals.cluster.thisNodeName, t.name)
 		msg.SrvMsg.uid = types.ParseUserId(msg.SrvMsg.AsUser)
 		t.proxy <- msg
 	} else {
@@ -711,7 +712,8 @@ func (c *Cluster) nodeForTopic(topic string) *ClusterNode {
 
 	node := c.nodes[key]
 	// RoyTien
-	log.Printf("Cluster nodeForTopic | c.thisNodeName: %s | node.name: %s\n", c.thisNodeName, node.name)
+	log.Printf("[Node %s] Cluster nodeForTopic | c.thisNodeName: %s | node.name: %s\n",
+		globals.cluster.thisNodeName, c.thisNodeName, node.name)
 	if node == nil {
 		log.Println("cluster: no node for topic", topic, key)
 	}
@@ -827,7 +829,8 @@ func (c *Cluster) routeToTopicMaster(reqType ProxyReqType, payload interface{}, 
 	// Find the cluster node which owns the topic, then forward to it.
 	n := c.nodeForTopic(topic)
 	// RoyTien
-	log.Printf("Cluster routeToTopicMaster | c.thisNodeName: %s | n.name: %s\n", c.thisNodeName, n.name)
+	log.Printf("[Node %s] Cluster routeToTopicMaster | c.thisNodeName: %s | n.name: %s\n",
+		globals.cluster.thisNodeName, c.thisNodeName, n.name)
 	if n == nil {
 		return errors.New("node for topic not found")
 	}
@@ -848,7 +851,8 @@ func (c *Cluster) routeToTopicIntraCluster(topic string, msg *ServerComMessage, 
 		return errors.New("node for topic not found (intra)")
 	}
 	// RoyTien
-	log.Printf("Cluster routeToTopicIntraCluster | c.thisNodeName: %s | n.name: %s\n", c.thisNodeName, n.name)
+	log.Printf("[Node %s] Cluster routeToTopicIntraCluster | c.thisNodeName: %s | n.name: %s\n",
+		globals.cluster.thisNodeName, c.thisNodeName, n.name)
 	route := &ClusterRoute{
 		Node:        c.thisNodeName,
 		Signature:   c.ring.Signature(),
@@ -1122,7 +1126,7 @@ func (c *Cluster) gcProxySessionsForNode(node string) {
 // the master to the original sessions hosted on other nodes.
 func (t *Topic) clusterWriteLoop() {
 	// RoyTien
-	log.Println("clusterWriteLoop start from addProxiedSession |")
+	log.Printf("[Node %s] clusterWriteLoop start from addProxiedSession |\n", globals.cluster.thisNodeName)
 	cleanUp := func(sess *Session) {
 		sess.closeRPC()
 		globals.sessionStore.Delete(sess)
@@ -1134,8 +1138,9 @@ func (t *Topic) clusterWriteLoop() {
 		}
 	}()
 
-	log.Printf("topic[%s]: starting cluster write loop", t.name)
+	log.Printf("[Node %s] topic[%s]: starting cluster write loop\n", globals.cluster.thisNodeName, t.name)
 	for {
+		log.Printf("[Node %s] clusterWriteLoop [for]", globals.cluster.thisNodeName)
 		chosen, value, ok := reflect.Select(t.proxiedChannels)
 		if !ok {
 			log.Printf("topic[%s]: clusterWriteLoop EOF - quitting", t.name)
