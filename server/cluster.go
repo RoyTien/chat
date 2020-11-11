@@ -374,6 +374,10 @@ func (n *ClusterNode) masterToProxy(msg *ClusterResp) error {
 // in a fire-and-forget manner.
 func (n *ClusterNode) masterToProxyAsync(msg *ClusterResp) error {
 	var unused bool
+	// RoyTien
+	log.Printf(
+		"masterToProxyAsync | n.name: %s | msg.ReptTo: %s\n",
+		n.name, msg.RcptTo)
 	if c := n.callAsync("Cluster.TopicProxy", msg, &unused, nil); c.Error != nil {
 		return c.Error
 	}
@@ -383,6 +387,8 @@ func (n *ClusterNode) masterToProxyAsync(msg *ClusterResp) error {
 // route routes server message within the cluster.
 func (n *ClusterNode) route(msg *ClusterRoute) error {
 	var unused bool
+	// RoyTien
+	log.Printf("ClusterNode route | n.name: %s\n", n.name)
 	return n.call("Cluster.Route", msg, &unused)
 }
 
@@ -473,6 +479,11 @@ func (c *Cluster) TopicMaster(msg *ClusterReq, rejected *bool) error {
 		}
 	}
 
+	// RoyTien
+	log.Printf(
+		"TopicMaster | msg.Node: %s | thisNodeName: %s | listenOn: %s | uid: %s | msg.ReqType: %d | Topic: %s\n",
+		msg.Node, c.thisNodeName, c.listenOn, msg.Sess.Uid, msg.ReqType, msg.RcptTo)
+
 	switch msg.ReqType {
 	case ProxyReqJoin:
 		join := &sessionJoin{
@@ -535,6 +546,8 @@ func (Cluster) TopicProxy(msg *ClusterResp, unused *bool) error {
 	// This cluster member received a response from the topic master to be forwarded to the topic.
 	// Find appropriate topic, send the message to it.
 	if t := globals.hub.topicGet(msg.RcptTo); t != nil {
+		// RoyTien
+		log.Printf("Cluster TopicProxy | thisNodeName: %s | topic name: %s\n", globals.cluster.thisNodeName, t.name)
 		msg.SrvMsg.uid = types.ParseUserId(msg.SrvMsg.AsUser)
 		t.proxy <- msg
 	} else {
@@ -547,6 +560,7 @@ func (Cluster) TopicProxy(msg *ClusterResp, unused *bool) error {
 // Route endpoint receives intra-cluster messages destined for the nodes hosting the topic.
 // Called by Hub.route channel consumer for messages send without attaching to topic first.
 func (c *Cluster) Route(msg *ClusterRoute, rejected *bool) error {
+	log.Printf("Cluster Route | thisNodeName: %s\n", c.thisNodeName)
 	*rejected = false
 	if msg.Signature != c.ring.Signature() {
 		sid := ""
@@ -696,6 +710,8 @@ func (c *Cluster) nodeForTopic(topic string) *ClusterNode {
 	}
 
 	node := c.nodes[key]
+	// RoyTien
+	log.Printf("Cluster nodeForTopic | c.thisNodeName: %s | node.name: %s\n", c.thisNodeName, node.name)
 	if node == nil {
 		log.Println("cluster: no node for topic", topic, key)
 	}
@@ -810,6 +826,8 @@ func (c *Cluster) routeToTopicMaster(reqType ProxyReqType, payload interface{}, 
 
 	// Find the cluster node which owns the topic, then forward to it.
 	n := c.nodeForTopic(topic)
+	// RoyTien
+	log.Printf("Cluster routeToTopicMaster | c.thisNodeName: %s | n.name: %s\n", c.thisNodeName, n.name)
 	if n == nil {
 		return errors.New("node for topic not found")
 	}
@@ -829,7 +847,8 @@ func (c *Cluster) routeToTopicIntraCluster(topic string, msg *ServerComMessage, 
 	if n == nil {
 		return errors.New("node for topic not found (intra)")
 	}
-
+	// RoyTien
+	log.Printf("Cluster routeToTopicIntraCluster | c.thisNodeName: %s | n.name: %s\n", c.thisNodeName, n.name)
 	route := &ClusterRoute{
 		Node:        c.thisNodeName,
 		Signature:   c.ring.Signature(),
@@ -1102,6 +1121,8 @@ func (c *Cluster) gcProxySessionsForNode(node string) {
 // attached to a master topic. This function handles all the events send from
 // the master to the original sessions hosted on other nodes.
 func (t *Topic) clusterWriteLoop() {
+	// RoyTien
+	log.Println("clusterWriteLoop start from addProxiedSession |")
 	cleanUp := func(sess *Session) {
 		sess.closeRPC()
 		globals.sessionStore.Delete(sess)

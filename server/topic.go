@@ -3397,6 +3397,8 @@ func (t *Topic) remProxiedSession(sess *Session) bool {
 func (t *Topic) addSession(sess *Session, asUid types.Uid, isChanSub bool) {
 	s := sess
 	if sess.multi != nil {
+		// RoyTien
+		log.Printf("addSession | t.name: %s | sess.multi is true\n",t.name)
 		s = s.multi
 	}
 
@@ -3418,6 +3420,8 @@ func (t *Topic) addSession(sess *Session, asUid types.Uid, isChanSub bool) {
 		} else {
 			t.sessions[s] = perSessionData{muids: []types.Uid{asUid}}
 		}
+		// RoyTien
+		log.Printf("addSession addProxiedSession | sess proto is MULTIPLEX \n")
 		t.addProxiedSession(s)
 	} else {
 		t.sessions[s] = perSessionData{uid: asUid, isChanSub: isChanSub}
