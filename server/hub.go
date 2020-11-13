@@ -174,6 +174,8 @@ func (h *Hub) run() {
 			// Is the topic already loaded?
 			t := h.topicGet(join.pkt.RcptTo)
 			if t == nil {
+				// RoyTien
+				log.Printf("[Node %s] Hub Run | Create Topic: %s\n", globals.cluster.thisNodeName, join.pkt.RcptTo)
 				// Topic does not exist or not loaded.
 				t = &Topic{name: join.pkt.RcptTo,
 					xoriginal: join.pkt.Original,
